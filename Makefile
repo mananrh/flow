@@ -118,6 +118,19 @@ notarize:
 		--keychain-profile "$(NOTARIZE_PROFILE)" --wait
 	xcrun stapler staple "$(BUILD_DIR)/$(APP_NAME).dmg"
 
+# Production convenience — builds a universal-binary DMG ready for distribution.
+.PHONY: production
+production:
+	@$(MAKE) clean
+	@$(MAKE) icon APP_NAME=Flow
+	@$(MAKE) all APP_NAME=Flow BUNDLE_ID=com.mananrathod.flow ARCH=universal
+	@$(MAKE) dmg APP_NAME=Flow BUNDLE_ID=com.mananrathod.flow
+	@echo ""
+	@echo "=========================================="
+	@echo " Production build ready!"
+	@echo "   DMG: build/Flow.dmg"
+	@echo "=========================================="
+
 clean:
 	rm -rf $(BUILD_DIR)
 

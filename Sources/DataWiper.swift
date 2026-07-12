@@ -3,29 +3,16 @@ import Foundation
 struct DataWiper {
     static func wipeAllUserData() {
         let fileManager = FileManager.default
-
-        // Application Support directories
-        let appSupportPaths = [
-            fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
-                .appendingPathComponent("Flow"),
-            fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
-                .appendingPathComponent("Flow Dev")
-        ]
-
-        for path in appSupportPaths {
-            if let path = path {
-                try? fileManager.removeItem(at: path)
-            }
-        }
-
-        // UserDefaults domains
+        let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "Flow"
         let bundleID = Bundle.main.bundleIdentifier ?? "com.mananrathod.flow"
-        let domainSuffixes = ["", ".dev"]
 
-        for suffix in domainSuffixes {
-            let domain = bundleID + suffix
-            UserDefaults.standard.removePersistentDomain(forName: domain)
-            UserDefaults.standard.synchronize()
+        // Application Support directory
+        if let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
+            try? fileManager.removeItem(at: appSupport.appendingPathComponent(appName))
         }
+
+        // UserDefaults domain
+        UserDefaults.standard.removePersistentDomain(forName: bundleID)
+        UserDefaults.standard.synchronize()
     }
 }
